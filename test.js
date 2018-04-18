@@ -18,18 +18,16 @@ describe('Secure Remote Password', () => {
         const clientEphemeral = client.generateEphemeral()
         const serverEphemeral = server.generateEphemeral(verifier)
 
-        clientSession = null;
-        client.deriveSession(clientEphemeral.secret, serverEphemeral.ephemeral, salt, username, privateKey, function(error, session) {
-            assert.strictEqual(error, null)
-            clientSession = session
-        })
+        const clientSession = client.deriveSession(clientEphemeral.secret, serverEphemeral.ephemeral, salt, username, privateKey);
+        
+        assert.strictEqual(clientSession.error, null)
+        
         server.deriveSession(serverEphemeral.secret, clientEphemeral.ephemeral, salt, username, verifier, clientSession.proof, function(error, session) {
             assert.strictEqual(error, null)            
             serverSession = session
         })
-        client.verifySession(clientEphemeral.ephemeral, clientSession, serverSession.proof, function(error) {
-            assert.strictEqual(error, null);
-        })
+        const result = client.verifySession(clientEphemeral.ephemeral, clientSession.key, clientSession.proof, serverSession.proof);
+        assert.strictEqual(result.error, null);
         assert.strictEqual(clientSession.key, serverSession.key)
     })
 })

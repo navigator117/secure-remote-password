@@ -56,7 +56,7 @@ exports.generateEphemeral = function () {
     }
 }
 
-exports.deriveSession = function (clientSecretEphemeral, serverPublicEphemeral, salt, username, privateKey, callback) {
+exports.deriveSession = function (clientSecretEphemeral, serverPublicEphemeral, salt, username, privateKey) {
     // N    A large safe prime (N = 2q+1, where q is prime)
     // g    A generator modulo N
     // k    Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
@@ -80,8 +80,9 @@ exports.deriveSession = function (clientSecretEphemeral, serverPublicEphemeral, 
     // B % N > 0
     if (B.mod(N).equals(SRPInteger.ZERO)) {
         // fixme: .code, .statusCode, etc.
-        callback(new Error('The server sent an invalid public ephemeral'))
-        return
+        return {
+            error: new Error('The server sent an invalid public ephemeral')
+        }
     }
 
     // u = H(A, B)
@@ -96,13 +97,14 @@ exports.deriveSession = function (clientSecretEphemeral, serverPublicEphemeral, 
     // M = H(H(N) xor H(g), H(I), s, A, B, K)
     const M = H(H(N).xor(H(g)), H(I), s, A, B, K)
 
-    callback(null, {
+    return {
+        error: null,
         key: K.toHex(),
         proof: M.toHex()
-    })
+    }
 }
 
-exports.verifySession = function (clientPublicEphemeral, clientSession, serverSessionProof, callback) {
+exports.verifySession = function (clientPublicEphemeral, clientSessionKey, clientSessionProof, serverSessionProof) {
     // H()  One-way hash function
     const { H } = params
 
@@ -110,17 +112,21 @@ exports.verifySession = function (clientPublicEphemeral, clientSession, serverSe
     // M    Proof of K
     // K    Shared, strong session key
     const A = SRPInteger.fromHex(clientPublicEphemeral)
-    const M = SRPInteger.fromHex(clientSession.proof)
-    const K = SRPInteger.fromHex(clientSession.key)
+    const M = SRPInteger.fromHex(clientSessionProof)
+    const K = SRPInteger.fromHex(clientSessionKey)
 
     // H(A, M, K)
     const expected = H(A, M, K)
     const actual = SRPInteger.fromHex(serverSessionProof)
 
     if (!actual.equals(expected)) {
-        callback(new Error('Server provided session proof is invalid'))
+        return {
+            error: new Error('Server provided session proof is invalid')
+        }
     }
     else {
-        callback(null)
+        return {
+            error: null
+        }
     }
 }
