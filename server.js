@@ -18,7 +18,7 @@ exports.generateEphemeral = function (verifier) {
 
     return {
         secret: b.toHex(),
-        public: B.toHex()
+        ephemeral: B.toHex()
     }
 }
 

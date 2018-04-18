@@ -4,7 +4,8 @@
   "license": "MIT",
   "repository": "LinusU/secure-remote-password",
   "scripts": {
-    "test": "standard && mocha"
+    "test": "standard && mocha",
+    "build:browser": "webpack --config ./webpack.config.js"
   },
   "browser": {
     "./lib/sha256.js": "./browser/sha256.js"
@@ -20,6 +21,8 @@
   },
   "devDependencies": {
     "mocha": "^3.5.0",
-    "standard": "^10.0.3"
+    "standard": "^10.0.3",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.14"
   }
 }

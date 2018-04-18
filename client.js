@@ -52,7 +52,7 @@ exports.generateEphemeral = function () {
 
     return {
         secret: a.toHex(),
-        public: A.toHex()
+        ephemeral: A.toHex()
     }
 }
 
