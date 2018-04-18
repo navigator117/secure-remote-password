@@ -81,7 +81,7 @@ exports.deriveSession = function (clientSecretEphemeral, serverPublicEphemeral, 
     if (B.mod(N).equals(SRPInteger.ZERO)) {
         // fixme: .code, .statusCode, etc.
         return {
-            error: new Error('The server sent an invalid public ephemeral')
+            error: 'The server sent an invalid public ephemeral'
         }
     }
 
@@ -121,7 +121,7 @@ exports.verifySession = function (clientPublicEphemeral, clientSessionKey, clien
 
     if (!actual.equals(expected)) {
         return {
-            error: new Error('Server provided session proof is invalid')
+            error: 'Server provided session proof is invalid'
         }
     }
     else {
