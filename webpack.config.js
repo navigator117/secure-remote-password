@@ -13,7 +13,7 @@ module.exports = {
         library: '[name]',
         libraryTarget: 'umd',
         path: path.resolve(__dirname, 'browser'),
-        filename: 'srp-browser.js'
+        filename: 'srplib-browser.js'
     },
     plugins: [
         new webpack.DefinePlugin({
